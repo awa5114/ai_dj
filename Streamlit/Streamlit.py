@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 st.markdown("""# DJ for dummies
-## Insert Youtube link
+## Paste the Youtube link of your song
 XYZ test""")
 
 df = pd.DataFrame({
