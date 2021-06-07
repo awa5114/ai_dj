@@ -17,9 +17,8 @@ def index():
     return {"greeting": "Hello world"}
 
 @app.get("/predict")
-def predict(youtube_link):
+def predict():
     # create a datetime object from the user provided datetime
-
     return {'mixed_audio': 'test'}
 
 if __name__ == "__main__":

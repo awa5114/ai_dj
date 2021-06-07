@@ -9,13 +9,6 @@ numpy
 pandas
 scikit-learn
 
-# tests/linter
-black
-coverage
-flake8
-pytest
-yapf
-
 # API
 gcsfs
 google-cloud-storage
