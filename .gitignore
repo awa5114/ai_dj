@@ -1,3 +1,5 @@
 *.mp3
 *.wav
+raw_data/
 notebooks/pretrained_models/
+*checkpoint.ipynb
