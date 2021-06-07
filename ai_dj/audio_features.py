@@ -1,4 +1,3 @@
-from librosa import beat
 from ai_dj.download_youtube import YoutubeDownloader
 import numpy as np
 import pandas as pd
@@ -8,6 +7,8 @@ from pyACA.ToolComputeHann import ToolComputeHann
 from pyACA.FeatureSpectralPitchChroma import FeatureSpectralPitchChroma
 from pyACA.ToolPreprocAudio import ToolPreprocAudio
 from pyACA.ToolReadAudio import ToolReadAudio
+from ai_dj.params import DOWNLOADED_FOLDER
+from os import path
 
 class AudioFeatureExtracter:
 
@@ -19,7 +20,7 @@ class AudioFeatureExtracter:
 
         # Run the default beat tracker
         tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
-        print('Estimated tempo: {:.2f} beats per minute'.format(tempo))
+        #print('Estimated tempo: {:.2f} beats per minute'.format(tempo))
 
         # Convert the frame indices of beat events into timestamps
         beat_times = librosa.frames_to_time(beat_frames, sr=sr)
@@ -77,31 +78,37 @@ class AudioFeatureExtracter:
 
         return (cKey)
 
-    def computeKeyCl(self, cPath):
+    def computeKeyCl(self):
         
-        [f_s, afAudioData] = ToolReadAudio(cPath)
+        [f_s, afAudioData] = ToolReadAudio(self.file)
         # afAudioData = np.sin(2*np.pi * np.arange(f_s*1)*440./f_s)
 
         cKey = self.computeKey(afAudioData, f_s)
-        print("detected key: ", cKey)
+        #print("detected key: ", cKey)
         
         return cKey
     
-    if __name__=='__main__':
-        yt_link = 'https://www.youtube.com/watch?v=ogv284C4W30'
-        youtubedl = YoutubeDownloader(yt_link)
-        title, song_id, output_filename, yt_link = youtubedl.download_metadata()
-        tempo, beat_frames, beat_times = get_BPM()
-        key = computeKeyCl()
-        new_song_dict = {"song_id":song_id,
-                        "youtube_link":yt_link,
-                        "output_file": output_filename,
-                        "title": title, 
-                        "BPM": tempo, 
-                        "key": key, 
-                        "beat_frames": beat_frames, 
-                        "beat_times": beat_times}
-        df = pd.DataFrame()
-        df = df.append(new_song_dict, ignore_index=True)
-        df = df.drop_duplicates()
-        print(df)
+if __name__=='__main__':
+    
+    yt_link = 'https://www.youtube.com/watch?v=ogv284C4W30'
+    youtubedl = YoutubeDownloader(yt_link)
+    title, song_id, output_filename, yt_link = youtubedl.download_metadata()
+    
+    audio_feature_extracter = AudioFeatureExtracter(f'{DOWNLOADED_FOLDER}/{output_filename}')
+    tempo, beat_frames, beat_times = audio_feature_extracter.get_BPM()
+    key = audio_feature_extracter.computeKeyCl()
+    new_song_dict = {"song_id":song_id,
+                    "youtube_link":yt_link,
+                    "output_file": output_filename,
+                    "title": title, 
+                    "BPM": tempo, 
+                    "key": key, 
+                    "beat_frames": beat_frames, 
+                    "beat_times": beat_times}
+    df = pd.DataFrame(columns=new_song_dict.keys())
+    df = df.append(new_song_dict, ignore_index=True)
+    
+    if path.exists("ai_dj/data/audio_features.csv"):
+        df.to_csv("ai_dj/data/audio_features.csv", mode='a', header=False)
+    else:
+        df.to_csv("ai_dj/data/audio_features.csv")
