@@ -21,3 +21,8 @@ line_count = st.slider('Select a line count', 1, 10, 3)
 head_df = df.head(line_count)
 
 head_df
+
+# Procfile
+#web: pip install . -U && ai_dj-run
+#web: pip install . -U && Streamlit/Streamlit.py
+#web: sh setup.sh && script/ai_dj-run
