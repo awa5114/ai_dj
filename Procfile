@@ -1,1 +1,1 @@
-web: pip install . -U && ai_dj-run
+web: pip install . -U 
