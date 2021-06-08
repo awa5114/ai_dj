@@ -19,27 +19,6 @@ import numpy as np
 import os
 import soundfile as sf
 
-yt_link = 'https://www.youtube.com/watch?v=ogv284C4W30'
-
-
-def download_song(yt_link):
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'wav',
-            'preferredquality': '192'
-        }],
-    }
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([yt_link])
-        meta = ydl.extract_info(yt_link, download=False)
-        title = meta["title"]
-        song_id = meta["id"]
-        output_filename = f'{title}-{song_id}.wav'
-    
-    return title, song_id, output_filename
-
 def get_BPM(output_filename):
     y, sr = librosa.load(output_filename, sr=44100)
 
