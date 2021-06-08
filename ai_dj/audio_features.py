@@ -1,3 +1,4 @@
+from librosa.core import convert
 from ai_dj.download_youtube import YoutubeDownloader
 import numpy as np
 import pandas as pd
@@ -8,15 +9,16 @@ from pyACA.FeatureSpectralPitchChroma import FeatureSpectralPitchChroma
 from pyACA.ToolPreprocAudio import ToolPreprocAudio
 from pyACA.ToolReadAudio import ToolReadAudio
 from ai_dj.params import DOWNLOADED_FOLDER
+from ai_dj import convert_mp3
 from os import path
 
 class AudioFeatureExtracter:
 
-    def __init__(self, file):
-        self.file = file
+    def __init__(self):
+        pass
         
-    def get_BPM(self, sr=44100):
-        y, sr = librosa.load(self.file, sr=sr)
+    def get_BPM(self, file, sr=44100):
+        y, sr = librosa.load(file, sr=sr)
 
         # Run the default beat tracker
         tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
@@ -78,9 +80,9 @@ class AudioFeatureExtracter:
 
         return (cKey)
 
-    def computeKeyCl(self):
+    def computeKeyCl(self, file):
         
-        [f_s, afAudioData] = ToolReadAudio(self.file)
+        [f_s, afAudioData] = ToolReadAudio(file)
         # afAudioData = np.sin(2*np.pi * np.arange(f_s*1)*440./f_s)
 
         cKey = self.computeKey(afAudioData, f_s)
@@ -91,14 +93,14 @@ class AudioFeatureExtracter:
     def youtube_audio_features(self):
         yt_link = 'https://www.youtube.com/watch?v=ogv284C4W30'
         youtubedl = YoutubeDownloader(yt_link)
-        title, song_id, output_filename, yt_link = youtubedl.download_metadata()
-        
-        audio_feature_extracter = AudioFeatureExtracter(f'{DOWNLOADED_FOLDER}/{output_filename}')
-        tempo, beat_frames, beat_times = audio_feature_extracter.get_BPM()
-        key = audio_feature_extracter.computeKeyCl()
+        title, song_id, output_file, yt_link = youtubedl.download_metadata()
+        file_path = f'{DOWNLOADED_FOLDER}/{output_file}'
+        #audio_feature_extracter = AudioFeatureExtracter(f'{DOWNLOADED_FOLDER}/{output_filename}')
+        tempo, beat_frames, beat_times = self.get_BPM(file_path)
+        key = self.computeKeyCl(file_path)
         new_song_dict = {"song_id":song_id,
                         "youtube_link":yt_link,
-                        "output_file": output_filename,
+                        "output_file": output_file,
                         "title": title, 
                         "BPM": tempo, 
                         "key": key, 
@@ -114,13 +116,16 @@ class AudioFeatureExtracter:
             
             
     def fma_audio_features(self, file):
-        
-        audio_feature_extracter = AudioFeatureExtracter(f'{DOWNLOADED_FOLDER}/{file}')
-        tempo, beat_frames, beat_times = audio_feature_extracter.get_BPM()
-        key = audio_feature_extracter.computeKeyCl()
+        output_file = convert_mp3(file)
+        file_path = f'{DOWNLOADED_FOLDER}/{output_file}'
+        song_id = output_file.replace(".wav", "")
+        title = song_id
+        #audio_feature_extracter = AudioFeatureExtracter(f'{DOWNLOADED_FOLDER}/{output_file}')
+        tempo, beat_frames, beat_times = self.get_BPM(file_path)
+        key = self.computeKeyCl(file_path)
         new_song_dict = {"song_id":"N/A",
                         "youtube_link":"N/A",
-                        "output_file": output_filename,
+                        "output_file": output_file,
                         "title": title, 
                         "BPM": tempo, 
                         "key": key, 
