@@ -1,0 +1,1 @@
+DOWNLOADED_FOLDER = "ai_dj/data/downloaded_music"
