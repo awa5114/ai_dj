@@ -1,6 +1,5 @@
 from spleeter.separator import Separator
 from ai_dj.params import DOWNLOADED_FOLDER, SPLIT_DATA_FOLDER
-from demucs
 
 class SpleeterSeparator():
     def __init__(self, file, stems=4):
