@@ -1,6 +1,6 @@
 # packaging
 pip>=9
-setuptools>=26
+setuptools#>=26
 twine
 wheel>=0.29
 
@@ -39,4 +39,4 @@ tensorflow
 spleeter
 
 # interface
-streamlitstreamlit
+streamlit
