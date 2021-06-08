@@ -28,7 +28,5 @@ class YoutubeDownloader:
         title = meta["title"]
         song_id = meta["id"]
         output_filename = f'{title}-{song_id}.wav'
-        
         return title, song_id, output_filename, self.yt_link
-
 
