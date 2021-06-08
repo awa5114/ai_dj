@@ -1,8 +1,9 @@
 name: Deploy to heroku
 on: [push]
+jobs:
     deploy_heroku:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-lates
 
     steps:
     - uses: actions/checkout@v2
