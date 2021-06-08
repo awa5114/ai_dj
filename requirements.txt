@@ -1,42 +1,14 @@
 # packaging
-pip>=9
-setuptools>=26
+pip
+setuptools
+
 twine
-wheel>=0.29
-
-# data science
-numpy
-pandas
-scikit-learn
-
-# tests/linter
-black
-coverage
-flake8
-pytest
-yapf
+wheel
 
 # API
-gcsfs
-google-cloud-storage
-mlflow
-s3fs
 fastapi
-
-# utilities
-six>=1.14
-joblib
-memoized-property
-termcolor
-
-# music related
-youtube_dl
-librosa
-audioread
-pydub
-pyACA
-tensorflow
-spleeter
+uvicorn
 
 # interface
 streamlit
+
