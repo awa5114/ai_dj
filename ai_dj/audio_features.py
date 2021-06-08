@@ -8,7 +8,7 @@ from pyACA.ToolComputeHann import ToolComputeHann
 from pyACA.FeatureSpectralPitchChroma import FeatureSpectralPitchChroma
 from pyACA.ToolPreprocAudio import ToolPreprocAudio
 from pyACA.ToolReadAudio import ToolReadAudio
-from ai_dj.params import DOWNLOADED_FOLDER
+from ai_dj.params import DOWNLOADED_FOLDER, RAW_DATA_FOLDER
 from ai_dj import convert_mp3
 from os import path
 
@@ -115,12 +115,10 @@ class AudioFeatureExtracter:
             df.to_csv("ai_dj/data/audio_features.csv")
             
             
-    def fma_audio_features(self, file):
-        output_file = convert_mp3(file)
+    def mp3_audio_features(self, file):
+        output_file = convert_mp3.convert_mp3_to_wav(file)
         file_path = f'{DOWNLOADED_FOLDER}/{output_file}'
-        song_id = output_file.replace(".wav", "")
-        title = song_id
-        #audio_feature_extracter = AudioFeatureExtracter(f'{DOWNLOADED_FOLDER}/{output_file}')
+        title = output_file.replace(".wav", "")
         tempo, beat_frames, beat_times = self.get_BPM(file_path)
         key = self.computeKeyCl(file_path)
         new_song_dict = {"song_id":"N/A",
@@ -138,4 +136,10 @@ class AudioFeatureExtracter:
             df.to_csv("ai_dj/data/audio_features.csv", mode='a', header=False)
         else:
             df.to_csv("ai_dj/data/audio_features.csv")
-            
+
+## Test ##
+file_name = '056247.mp3'
+file = f'{RAW_DATA_FOLDER}/{file_name}'
+extracter = AudioFeatureExtracter()
+extracter.mp3_audio_features(file)
+## Test ##
