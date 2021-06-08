@@ -1,9 +1,13 @@
 # packaging
-pip>=9
-setuptools>=26
+pip
+setuptools
 twine
-wheel>=0.29
+wheel
 
 # API
 fastapi
 uvicorn
+
+# interface
+streamlit
+
