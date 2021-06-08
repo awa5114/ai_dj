@@ -39,4 +39,4 @@ tensorflow
 spleeter
 
 # interface
-streamlit
+streamlitstreamlit
