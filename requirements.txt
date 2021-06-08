@@ -37,3 +37,6 @@ pydub
 pyACA
 tensorflow
 spleeter
+
+# interface
+streamlit
