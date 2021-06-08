@@ -90,9 +90,9 @@ class AudioFeatureExtracter:
         
         return cKey
     
-    def youtube_audio_features(self):
-        yt_link = 'https://www.youtube.com/watch?v=ogv284C4W30'
+    def youtube_audio_features(self, yt_link):
         youtubedl = YoutubeDownloader(yt_link)
+        youtubedl.download_song()
         title, song_id, output_file, yt_link = youtubedl.download_metadata()
         file_path = f'{DOWNLOADED_FOLDER}/{output_file}'
         #audio_feature_extracter = AudioFeatureExtracter(f'{DOWNLOADED_FOLDER}/{output_filename}')
@@ -138,8 +138,10 @@ class AudioFeatureExtracter:
             df.to_csv("ai_dj/data/audio_features.csv")
 
 ## Test ##
+yt_link = 'https://www.youtube.com/watch?v=Q77vdqA0hnM'
 file_name = '056247.mp3'
 file = f'{RAW_DATA_FOLDER}/{file_name}'
 extracter = AudioFeatureExtracter()
-extracter.mp3_audio_features(file)
+#extracter.mp3_audio_features(file)
+extracter.youtube_audio_features(yt_link)
 ## Test ##
