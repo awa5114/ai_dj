@@ -3,7 +3,7 @@ on: [push]
 jobs:
     deploy_heroku:
 
-    runs-on: ubuntu-lates
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
