@@ -36,4 +36,5 @@ librosa
 audioread
 pydub
 pyACA
+tensorflow
 spleeter
