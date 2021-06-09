@@ -1,5 +1,6 @@
 from spleeter.separator import Separator
 from ai_dj.params import DOWNLOADED_FOLDER, SPLIT_DATA_FOLDER
+from ai_dj import gcp_storage
 
 class SpleeterSeparator():
     def __init__(self, file, stems=5):
@@ -8,6 +9,8 @@ class SpleeterSeparator():
     
     def split_song(self):
         self.separator.separate_to_file(self.file, SPLIT_DATA_FOLDER)
+        folder = self.file.replace(".wav", "")
+        gcp_storage.upload_stems(folder)
     
 # class DemucsSeparator():
 #     def __init__(self, file):

@@ -14,7 +14,8 @@ def get_mp3(file):
 def upload_youtube_wav(file):
     storage_client = storage.Client()
     bucket = storage_client.bucket(params.BUCKET_NAME)
-    blob = bucket.blob(params.YT_DOWNLOAD_FOLDER)
+    destination_file_name = f'{params.YT_DOWNLOAD_FOLDER}{file}'
+    blob = bucket.blob(destination_file_name)
     source_file_name = f'{params.DOWNLOADED_FOLDER}/{file}'
     blob.upload_from_filename(source_file_name)
     
@@ -46,6 +47,7 @@ def upload_stems(folder):
     bucket = storage_client.bucket(params.BUCKET_NAME)
     destinatation_folder_name = f'{params.STEMS_FOLDER}/{folder}/'
     blob = bucket.blob(destinatation_folder_name)
+    print(destinatation_folder_name)
     source_folder_name = f'{params.SPLIT_DATA_FOLDER}{folder}'
     for filename in os.listdir(source_folder_name):
         source_file_name = f'{source_folder_name}/{filename}'
@@ -60,7 +62,7 @@ def upload_mixed_audio(file):
     blob.upload_from_filename(source_file_name)
   
 ## TEST ##
-#file = "Kygo, Sasha Sloan - I'll Wait (Lyric Video)-ogv284C4W30.wav"
+file = "Kygo, Sasha Sloan - I'll Wait (Lyric Video)-ogv284C4W30.wav"
 folder = "Kygo, Sasha Sloan - I'll Wait (Lyric Video)-ogv284C4W30"
-upload_stems(folder)
+upload_youtube_wav(file)
 ## TEST ##
