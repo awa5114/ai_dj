@@ -11,6 +11,7 @@ from pyACA.ToolReadAudio import ToolReadAudio
 from ai_dj.params import DOWNLOADED_FOLDER, RAW_DATA_FOLDER
 from ai_dj import convert_mp3
 from os import path
+from ai_dj import gcp_storage
 
 class AudioFeatureExtracter:
 
@@ -106,13 +107,8 @@ class AudioFeatureExtracter:
                         "key": key, 
                         "beat_frames": beat_frames, 
                         "beat_times": beat_times}
-        df = pd.DataFrame(columns=new_song_dict.keys())
-        df = df.append(new_song_dict, ignore_index=True)
-        
-        if path.exists("ai_dj/data/audio_features.csv"):
-            df.to_csv("ai_dj/data/audio_features.csv", mode='a', header=False)
-        else:
-            df.to_csv("ai_dj/data/audio_features.csv")
+        self.df = pd.DataFrame(columns=new_song_dict.keys())
+        self.df = self.df.append(new_song_dict, ignore_index=True)
             
             
     def mp3_audio_features(self, file):
@@ -129,13 +125,19 @@ class AudioFeatureExtracter:
                         "key": key, 
                         "beat_frames": beat_frames, 
                         "beat_times": beat_times}
-        df = pd.DataFrame(columns=new_song_dict.keys())
-        df = df.append(new_song_dict, ignore_index=True)
+        self.df = pd.DataFrame(columns=new_song_dict.keys())
+        self.df = self.df.append(new_song_dict, ignore_index=True)
         
-        if path.exists("ai_dj/data/audio_features.csv"):
-            df.to_csv("ai_dj/data/audio_features.csv", mode='a', header=False)
-        else:
-            df.to_csv("ai_dj/data/audio_features.csv")
+        
+    def write_to_csv(self):
+        csv = gcp_storage.get_audio_features_csv
+        csv_df = pd.read_csv(csv)
+        csv_df = csv_df.append(self.df)
+        csv_df = csv_df.drop_duplicates(subset=['title'])
+        csv_df.to_csv("ai_dj/data/audio_features.csv")
+        
+    def upload_csv_to_gcp(self):
+        gcp_storage.upload_audio_features_csv()
 
 ## Test ##
 yt_link = 'https://www.youtube.com/watch?v=Q77vdqA0hnM'
