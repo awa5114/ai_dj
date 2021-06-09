@@ -45,11 +45,13 @@ def get_youtube_wav(file):
 def upload_stems(folder):
     storage_client = storage.Client()
     bucket = storage_client.bucket(params.BUCKET_NAME)
-    destinatation_folder_name = f'{params.STEMS_FOLDER}/{folder}/'
-    blob = bucket.blob(destinatation_folder_name)
-    print(destinatation_folder_name)
+    # destinatation_folder_name = f'{params.STEMS_FOLDER}/{folder}/'
+    # blob = bucket.blob(destinatation_folder_name)
+    # print(destinatation_folder_name)
     source_folder_name = f'{params.SPLIT_DATA_FOLDER}{folder}'
     for filename in os.listdir(source_folder_name):
+        destination_file_name = f'{params.STEMS_FOLDER}/{folder}/{filename}'
+        blob = bucket.blob(destination_file_name)
         source_file_name = f'{source_folder_name}/{filename}'
         print(source_file_name)
         blob.upload_from_filename(source_file_name)
@@ -57,12 +59,14 @@ def upload_stems(folder):
 def upload_mixed_audio(file):
     storage_client = storage.Client()
     bucket = storage_client.bucket(params.BUCKET_NAME)
-    blob = bucket.blob(params.MIXED_FOLDER)
+    destination_file_name = f'{params.MIXED_FOLDER}/{file}'
+    blob = bucket.blob(destination_file_name)
     source_file_name = f'{params.MIXED_AUDIO_FOLDER}/{file}'
     blob.upload_from_filename(source_file_name)
   
 ## TEST ##
-file = "Kygo, Sasha Sloan - I'll Wait (Lyric Video)-ogv284C4W30.wav"
+#file = "Kygo, Sasha Sloan - I'll Wait (Lyric Video)-ogv284C4W30.wav"
+file = "64_kygo_combined2.wav"
 folder = "Kygo, Sasha Sloan - I'll Wait (Lyric Video)-ogv284C4W30"
-get_youtube_wav(file)
+upload_stems(folder)
 ## TEST ##
