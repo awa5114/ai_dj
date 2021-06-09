@@ -4,6 +4,8 @@ RAW_DATA_FOLDER = "raw_data"
 SPLIT_DATA_FOLDER = "ai_dj/data/split_audio_files/"
 MIXED_AUDIO_FOLDER = "ai_dj/data/mixed_audio/"
 TEMP_DATA_FOLDER = "ai_dj/data/temp_audio/"
+TEMP_STEMS_FOLDER = "ai_dj/data/temp_stems/"
+TEMP_MIXED_FOLDER = "ai_dj/data/temp_mixed/"
 AUDIO_FEATURES_FILE = "audio_features.csv"
 DATA_FOLDER = "ai_dj/data"
 

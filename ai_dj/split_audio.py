@@ -20,7 +20,9 @@ class SpleeterSeparator():
         
 ## Test ##
 if __name__=='__main__':
-    file = f"{DOWNLOADED_FOLDER}/Two Scoops-Q77vdqA0hnM.wav"
-    separator = SpleeterSeparator(file)
+    file = "Steve Monite - Only You-L-2CyO8pc0E.wav"
+    gcp_storage.get_youtube_wav(file)
+    temp_file = f"{DOWNLOADED_FOLDER}/{file}"
+    separator = SpleeterSeparator(temp_file)
     separator.split_song()
 ## Test ##
