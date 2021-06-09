@@ -14,9 +14,8 @@ class SpleeterSeparator():
         gcp_storage.upload_stems(folder)
         os.remove(f'{SPLIT_DATA_FOLDER}/{folder}')
     
-if __name__=='__main__':
-    file = "Steve Monite - Only You-L-2CyO8pc0E.wav"
-    gcp_storage.get_youtube_wav(file)
-    temp_file = f"{DOWNLOADED_FOLDER}/{file}"
-    separator = SpleeterSeparator(temp_file)
-    separator.split_song()
+# if __name__=='__main__':
+#     gcp_storage.get_youtube_wav(file)
+#     temp_file = f"{DOWNLOADED_FOLDER}/{file}"
+#     separator = SpleeterSeparator(temp_file)
+#     separator.split_song()
