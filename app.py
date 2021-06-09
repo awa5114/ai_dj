@@ -21,10 +21,7 @@ df = pd.DataFrame({
 #line_count = st.slider('Select a line count', 1, 10, 3)
 # and used in order to select the displayed lines
 #head_df = df.head(line_count)
-
 #head_df
-
-import streamlit as st
 
 st.audio(mix, format='audio/wav', start_time=0)
 
