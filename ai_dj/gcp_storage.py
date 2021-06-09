@@ -37,7 +37,7 @@ def upload_audio_features_csv():
 def get_youtube_wav(file):
     storage_client = storage.Client()
     bucket = storage_client.bucket(params.BUCKET_NAME)
-    source_blob_name = f'{params.YT_DOWNLOAD_FOLDER}/{file}'
+    source_blob_name = f'{params.YT_DOWNLOAD_FOLDER}{file}'
     blob = bucket.blob(source_blob_name)
     destination_file_name = f'{params.TEMP_DATA_FOLDER}/{file}'
     blob.download_to_filename(destination_file_name)
@@ -64,5 +64,5 @@ def upload_mixed_audio(file):
 ## TEST ##
 file = "Kygo, Sasha Sloan - I'll Wait (Lyric Video)-ogv284C4W30.wav"
 folder = "Kygo, Sasha Sloan - I'll Wait (Lyric Video)-ogv284C4W30"
-upload_youtube_wav(file)
+get_youtube_wav(file)
 ## TEST ##
