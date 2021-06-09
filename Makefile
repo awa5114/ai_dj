@@ -55,6 +55,13 @@ pypi:
 	@twine upload dist/* -u $(PYPI_USERNAME)
 
 # ----------------------------------
+#  API related
+# ----------------------------------
+
+run_api:
+	uvicorn api.fast:app --reload  # load web server with code autoreload
+
+# ----------------------------------
 #  GOOGLE CLOUD PLATFORM - STORAGE
 # ----------------------------------
 default: pylint
