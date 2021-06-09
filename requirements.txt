@@ -11,7 +11,3 @@ uvicorn
 
 # interface
 streamlit
-<<<<<<< HEAD
-=======
-
->>>>>>> main
