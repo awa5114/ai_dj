@@ -22,16 +22,17 @@ def upload_youtube_wav(file):
 def get_audio_features_csv():
     storage_client = storage.Client()
     bucket = storage_client.bucket(params.BUCKET_NAME)
-    source_blob_name = params.AUDIO_FEATURES_FILE
+    source_blob_name = f'{params.AUDIO_FEATURES_FOLDER}/{params.AUDIO_FEATURES_FILE}'
     blob = bucket.blob(source_blob_name)
-    destination_file_name = params.AUDIO_FEATURES_FOLDER
-    blob.download_to_filename(destination_file_name)    
+    destination_file_name = f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}'
+    blob.download_to_filename(destination_file_name)
 
 def upload_audio_features_csv():
     storage_client = storage.Client()
     bucket = storage_client.bucket(params.BUCKET_NAME)
-    blob = bucket.blob(params.AUDIO_FEATURES_FOLDER)
-    source_file_name = params.AUDIO_FEATURES_FILE
+    destination_file_name = f'{params.AUDIO_FEATURES_FOLDER}/{params.AUDIO_FEATURES_FILE}'
+    blob = bucket.blob(destination_file_name)
+    source_file_name = f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}'
     blob.upload_from_filename(source_file_name)
   
 def get_youtube_wav(file):
@@ -45,9 +46,6 @@ def get_youtube_wav(file):
 def upload_stems(folder):
     storage_client = storage.Client()
     bucket = storage_client.bucket(params.BUCKET_NAME)
-    # destinatation_folder_name = f'{params.STEMS_FOLDER}/{folder}/'
-    # blob = bucket.blob(destinatation_folder_name)
-    # print(destinatation_folder_name)
     source_folder_name = f'{params.SPLIT_DATA_FOLDER}{folder}'
     for filename in os.listdir(source_folder_name):
         destination_file_name = f'{params.STEMS_FOLDER}/{folder}/{filename}'
@@ -66,7 +64,7 @@ def upload_mixed_audio(file):
   
 ## TEST ##
 #file = "Kygo, Sasha Sloan - I'll Wait (Lyric Video)-ogv284C4W30.wav"
-file = "64_kygo_combined2.wav"
-folder = "Kygo, Sasha Sloan - I'll Wait (Lyric Video)-ogv284C4W30"
-upload_stems(folder)
+#file = "64_kygo_combined2.wav"
+#folder = "Kygo, Sasha Sloan - I'll Wait (Lyric Video)-ogv284C4W30"
+#upload_stems(folder)
 ## TEST ##

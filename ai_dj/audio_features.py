@@ -12,6 +12,7 @@ from ai_dj.params import DOWNLOADED_FOLDER, RAW_DATA_FOLDER
 from ai_dj import convert_mp3
 from os import path
 from ai_dj import gcp_storage
+from ai_dj import params
 
 class AudioFeatureExtracter:
 
@@ -130,20 +131,22 @@ class AudioFeatureExtracter:
         
         
     def write_to_csv(self):
-        csv = gcp_storage.get_audio_features_csv
-        csv_df = pd.read_csv(csv)
+        gcp_storage.get_audio_features_csv()
+        csv_df = pd.read_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}')
         csv_df = csv_df.append(self.df)
         csv_df = csv_df.drop_duplicates(subset=['title'])
-        csv_df.to_csv("ai_dj/data/audio_features.csv")
+        csv_df.to_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}')
         
     def upload_csv_to_gcp(self):
         gcp_storage.upload_audio_features_csv()
 
 ## Test ##
-yt_link = 'https://www.youtube.com/watch?v=Q77vdqA0hnM'
-file_name = '056247.mp3'
-file = f'{RAW_DATA_FOLDER}/{file_name}'
+yt_link = "https://www.youtube.com/watch?v=L-2CyO8pc0E"
+#file_name = '056247.mp3'
+#file = f'{RAW_DATA_FOLDER}/{file_name}'
 extracter = AudioFeatureExtracter()
 #extracter.mp3_audio_features(file)
 extracter.youtube_audio_features(yt_link)
+extracter.write_to_csv()
+extracter.upload_csv_to_gcp()
 ## Test ##

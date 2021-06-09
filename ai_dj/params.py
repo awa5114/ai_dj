@@ -4,7 +4,7 @@ RAW_DATA_FOLDER = "raw_data"
 SPLIT_DATA_FOLDER = "ai_dj/data/split_audio_files/"
 MIXED_AUDIO_FOLDER = "ai_dj/data/mixed_audio/"
 TEMP_DATA_FOLDER = "ai_dj/data/temp_audio/"
-AUDIO_FEATURES_FILE = "ai_dj/data/audio_features.csv"
+AUDIO_FEATURES_FILE = "audio_features.csv"
 DATA_FOLDER = "ai_dj/data"
 
 # Google Cloud Storage folders
