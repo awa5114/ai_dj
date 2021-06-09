@@ -1,4 +1,13 @@
+# Local folders 
 DOWNLOADED_FOLDER = "ai_dj/data/downloaded_music"
 RAW_DATA_FOLDER = "raw_data"
 SPLIT_DATA_FOLDER = "ai_dj/data/split_audio_files/"
 MIXED_AUDIO_FOLDER = "ai_dj/data/mixed_audio/"
+TEMP_DATA_FOLDER = "ai_dj/data/temp_audio/"
+
+# Google Cloud Storage folders
+BUCKET_NAME = "ai_dj_batch627_data"
+MP3_DATA_FOLDER = "data/audio"
+YT_DOWNLOAD_FOLDER = "data/youtube_downloads"
+STEMS_FOLDER = "data/stems"
+MIXED_FOLDER = "data/mixed_audio"
