@@ -18,7 +18,7 @@ def clean_local_folders():
                 
 ## Get youtube_link from app
 def get_youtube_link():
-    youtube_link = "https://www.youtube.com/watch?v=dpgqo3kH4rs"
+    youtube_link = "https://www.youtube.com/watch?v=nXOSgekiAJc"
     return youtube_link
 
 ## Extract youtube_wav file & audiofeatures + upload to the folder
@@ -69,21 +69,25 @@ def get_mp3_file_names():
     return mp3_files
 
 if __name__=='__main__':
+    """get Youtube link features and update audio_features.csv"""
     gcp_storage.get_audio_features_csv()
+    yt_link = get_youtube_link()
     audio_df = pd.read_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}', index_col=0)
-    mp3_files = get_mp3_file_names()
-    for mp3_file in mp3_files:
-        output_file_name = mp3_file.replace(".mp3", ".wav")    
-        if not output_file_name in audio_df["output_file"].values:
-            clean_local_folders()
-    # ## Youtube link
-    # # yt_link = get_youtube_link()
-    # # output_file = extract_features_and_upload(yt_link)
-    # # print(output_file)
-    # # split_into_stems(output_file)
-    # ## mp3 file to wav
-    # #mp3_file = "299800 Agnes (ch) - Bass Music For Bass People (Original Mix).mp3"
-            if mp3_file.endswith(".mp3"):
-                extract_mp3_features_and_upload(mp3_file)
+    if not yt_link in audio_df["youtube_link"].values:
+        clean_local_folders()
+        output_file = extract_features_and_upload(yt_link)
+        print(output_file)
     gcp_storage.upload_audio_features_csv()
+    
+    """get mp3_file features and update audio_features.csv"""
+    # gcp_storage.get_audio_features_csv()
+    # audio_df = pd.read_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}', index_col=0)
+    # mp3_files = get_mp3_file_names()
+    # for mp3_file in mp3_files:
+    #     output_file_name = mp3_file.replace(".mp3", ".wav")    
+    #     if not output_file_name in audio_df["output_file"].values:
+    #         clean_local_folders()
+    #         if mp3_file.endswith(".mp3"):
+    #             extract_mp3_features_and_upload(mp3_file)
+    # gcp_storage.upload_audio_features_csv()
     
