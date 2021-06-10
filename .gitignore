@@ -4,3 +4,4 @@ raw_data/
 *pretrained_models/
 *checkpoint.ipynb
 *.pyc
+*.csv

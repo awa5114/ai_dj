@@ -126,8 +126,8 @@ class AudioFeatureExtracter:
         title = output_file.replace(".wav", "")
         tempo, beat_frames, beat_times = self.get_BPM(file_path)
         key = self.computeKeyCl(file_path)
-        new_song_dict = {"song_id":"N/A",
-                        "youtube_link":"N/A",
+        new_song_dict = {"song_id":"no song_id",
+                        "youtube_link":"no youtube_link",
                         "output_file": output_file,
                         "title": title, 
                         "BPM": tempo, 
@@ -136,7 +136,16 @@ class AudioFeatureExtracter:
                         "beat_times": beat_times}
         self.df = pd.DataFrame(columns=new_song_dict.keys())
         self.df = self.df.append(new_song_dict, ignore_index=True)
-        
+        # write to csv
+        #gcp_storage.get_audio_features_csv()
+        csv_df = pd.read_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}', index_col=0)
+        csv_df = csv_df.append(self.df)
+        csv_df = csv_df.drop_duplicates(subset=['title'])
+        # csv_df = self.df
+        csv_df.to_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}')
+        # upload csv
+        #gcp_storage.upload_audio_features_csv()
+        return output_file
         
     # def write_to_csv(self):
     #     gcp_storage.get_audio_features_csv()

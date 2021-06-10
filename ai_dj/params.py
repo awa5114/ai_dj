@@ -13,6 +13,7 @@ LOCAL_FOLDERS = ["downloaded_music", "mixed_audio", "split_audio_files", "temp_a
 # Google Cloud Storage folders
 BUCKET_NAME = "ai_dj_batch627_data"
 MP3_DATA_FOLDER = "data/audio"
+WAV_DATA_FOLDER = "data/audio_wav"
 YT_DOWNLOAD_FOLDER = "data/youtube_downloads/"
 AUDIO_FEATURES_FOLDER = "data/audio_features"
 STEMS_FOLDER = "data/stems"
