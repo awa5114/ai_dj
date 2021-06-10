@@ -1,4 +1,4 @@
-from ai_dj import gcp_storage
+from ai_dj import gcp_storage, neighbour_songs
 from ai_dj.audio_features import AudioFeatureExtracter
 from ai_dj.split_audio import SpleeterSeparator
 import os
@@ -18,15 +18,15 @@ def clean_local_folders():
                 
 ## Get youtube_link from app
 def get_youtube_link():
-    youtube_link = "https://www.youtube.com/watch?v=nXOSgekiAJc"
+    youtube_link = "https://www.youtube.com/watch?v=DSYsBUOH29M"
     return youtube_link
 
 ## Extract youtube_wav file & audiofeatures + upload to the folder
 def extract_features_and_upload(youtube_link):
     features_extracter = AudioFeatureExtracter()
-    output_file = features_extracter.youtube_audio_features(youtube_link)
+    output_file, bpm, key = features_extracter.youtube_audio_features(youtube_link)
     gcp_storage.upload_youtube_wav(output_file)
-    return output_file
+    return output_file, bpm, key
 
 ## Extract mp3 file & audiofeatures + upload to the folder
 def extract_mp3_features_and_upload(mp3_file):
@@ -44,7 +44,10 @@ def split_into_stems(file):
     separator.split_song()
 
 ## Find 2 other songs
-
+def get_neighbor_songs(output_file, bpm, key):
+    neighbours = neighbour_songs.filter_bpm_keys(output_file, bpm, key)
+    two_songs = neighbour_songs.select_songs(neighbours)
+    return two_songs
 
 ## Split 2 other songs into stems
 
@@ -75,9 +78,15 @@ if __name__=='__main__':
     audio_df = pd.read_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}', index_col=0)
     if not yt_link in audio_df["youtube_link"].values:
         clean_local_folders()
-        output_file = extract_features_and_upload(yt_link)
+        output_file, bpm, key = extract_features_and_upload(yt_link)
         print(output_file)
+    else:
+        bpm = audio_df[audio_df["youtube_link"] == yt_link]["BPM"].values[0]
+        key = audio_df[audio_df["youtube_link"] == yt_link]["key"].values[0]
+        output_file = audio_df[audio_df["youtube_link"] == yt_link]["output_file"].values[0]
     gcp_storage.upload_audio_features_csv()
+    two_songs = get_neighbor_songs(output_file, bpm, key)
+    print(two_songs["output_file"])
     
     """get mp3_file features and update audio_features.csv"""
     # gcp_storage.get_audio_features_csv()
