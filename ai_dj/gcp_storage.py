@@ -10,6 +10,14 @@ def get_mp3(file):
     blob = bucket.blob(source_blob_name)
     destination_file_name = f'{params.TEMP_DATA_FOLDER}/{file}'
     blob.download_to_filename(destination_file_name)
+    
+def upload_mp3_wav(file):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(params.BUCKET_NAME)
+    destination_file_name = f'{params.WAV_DATA_FOLDER}/{file}'
+    blob = bucket.blob(destination_file_name)
+    source_file_name = f'{params.DOWNLOADED_FOLDER}/{file}'
+    blob.upload_from_filename(source_file_name)
 
 def upload_youtube_wav(file):
     storage_client = storage.Client()

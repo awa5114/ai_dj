@@ -110,16 +110,21 @@ class AudioFeatureExtracter:
                         "beat_times": beat_times}
         self.df = pd.DataFrame(columns=new_song_dict.keys())
         self.df = self.df.append(new_song_dict, ignore_index=True)
-            
-            
+        # write to csv
+        csv_df = pd.read_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}', index_col=0)
+        csv_df = csv_df.append(self.df)
+        csv_df = csv_df.drop_duplicates(subset=['title'])
+        csv_df.to_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}')
+        return (output_file, tempo, key)
+        
     def mp3_audio_features(self, file):
         output_file = convert_mp3.convert_mp3_to_wav(file)
         file_path = f'{DOWNLOADED_FOLDER}/{output_file}'
         title = output_file.replace(".wav", "")
         tempo, beat_frames, beat_times = self.get_BPM(file_path)
         key = self.computeKeyCl(file_path)
-        new_song_dict = {"song_id":"N/A",
-                        "youtube_link":"N/A",
+        new_song_dict = {"song_id":"no song_id",
+                        "youtube_link":"no youtube_link",
                         "output_file": output_file,
                         "title": title, 
                         "BPM": tempo, 
@@ -128,25 +133,21 @@ class AudioFeatureExtracter:
                         "beat_times": beat_times}
         self.df = pd.DataFrame(columns=new_song_dict.keys())
         self.df = self.df.append(new_song_dict, ignore_index=True)
-        
-        
-    def write_to_csv(self):
-        gcp_storage.get_audio_features_csv()
-        csv_df = pd.read_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}')
+        # write to csv
+        csv_df = pd.read_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}', index_col=0)
         csv_df = csv_df.append(self.df)
         csv_df = csv_df.drop_duplicates(subset=['title'])
+        # csv_df = self.df
         csv_df.to_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}')
+        return output_file
         
-    def upload_csv_to_gcp(self):
-        gcp_storage.upload_audio_features_csv()
-
 ## Test ##
-yt_link = "https://www.youtube.com/watch?v=L-2CyO8pc0E"
-#file_name = '056247.mp3'
-#file = f'{RAW_DATA_FOLDER}/{file_name}'
-extracter = AudioFeatureExtracter()
-#extracter.mp3_audio_features(file)
-extracter.youtube_audio_features(yt_link)
-extracter.write_to_csv()
-extracter.upload_csv_to_gcp()
+# yt_link = "https://www.youtube.com/watch?v=L-2CyO8pc0E"
+# #file_name = '056247.mp3'
+# #file = f'{RAW_DATA_FOLDER}/{file_name}'
+# extracter = AudioFeatureExtracter()
+# #extracter.mp3_audio_features(file)
+# extracter.youtube_audio_features(yt_link)
+# extracter.write_to_csv()
+# extracter.upload_csv_to_gcp()
 ## Test ##
