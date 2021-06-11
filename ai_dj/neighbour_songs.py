@@ -83,7 +83,9 @@ def filter_bpm_keys(output_file, bpm, key):
     audio_df = audio_df.drop(columns=["beat_frames", "beat_times"])
     audio_df = audio_df[audio_df["output_file"] != output_file]
     audio_df["BPM"] = audio_df["BPM"].round()
-    bpm_df = audio_df[audio_df["BPM"] == round(bpm)]
+    bpms = [round(bpm), round(bpm/2)]
+    print(bpms)
+    bpm_df = audio_df[audio_df["BPM"].isin(bpms)]
     same_key_df = bpm_df[bpm_df["key"] == key]
     if len(same_key_df) > 1:
         return same_key_df
