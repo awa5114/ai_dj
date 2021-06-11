@@ -74,12 +74,13 @@ def get_neighbor_keys(key):
     neighbor_top = cl_key["neighbor_top"].values[0]
     neighbor_left = cl_key["neighbor_left"].values[0]
     neighbor_right = cl_key["neighbor_right"].values[0]
-    neighbors = [neighbor_top, neighbor_left, neighbor_right]
+    neighbors = [key, neighbor_top, neighbor_left, neighbor_right]
     return neighbors
 
 def filter_bpm_keys(output_file, bpm, key):
     gcp_storage.get_audio_features_csv()
     audio_df = pd.read_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}', index_col=0)
+    audio_df = audio_df.drop(columns=["beat_frames", "beat_times"])
     audio_df = audio_df[audio_df["output_file"] != output_file]
     audio_df["BPM"] = audio_df["BPM"].round()
     bpm_df = audio_df[audio_df["BPM"] == round(bpm)]
@@ -88,7 +89,9 @@ def filter_bpm_keys(output_file, bpm, key):
         return same_key_df
     else:
         neigborgs = get_neighbor_keys(key)
+        print(neigborgs)
         neigborgs_key_df = bpm_df[bpm_df["key"].isin(neigborgs)]
+        print(neigborgs_key_df)
         return neigborgs_key_df
 
 def select_songs(neighbors_songs):

@@ -18,7 +18,7 @@ def clean_local_folders():
                 
 ## Get youtube_link from app
 def get_youtube_link():
-    youtube_link = "https://www.youtube.com/watch?v=DSYsBUOH29M"
+    youtube_link = "https://www.youtube.com/watch?v=xF-UznUkhP8"
     return youtube_link
 
 ## Extract youtube_wav file & audiofeatures + upload to the folder
@@ -50,7 +50,7 @@ def get_neighbor_songs(output_file, bpm, key):
     return two_songs
 
 ## Split 2 other songs into stems
-
+# use split_into_stems()
 
 ## Determine which stems to mix
 
@@ -60,6 +60,7 @@ def get_neighbor_songs(output_file, bpm, key):
 
 ## Update app
 
+# Get MP3 audio file names
 def get_mp3_file_names():
     storage_client = storage.Client()
     bucket = storage_client.bucket(params.BUCKET_NAME)
@@ -70,6 +71,8 @@ def get_mp3_file_names():
         file = blob.name.replace("data/audio/", "")
         mp3_files.append(file)
     return mp3_files
+
+
 
 if __name__=='__main__':
     """get Youtube link features and update audio_features.csv"""
