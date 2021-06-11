@@ -115,7 +115,7 @@ class AudioFeatureExtracter:
         csv_df = csv_df.append(self.df)
         csv_df = csv_df.drop_duplicates(subset=['title'])
         csv_df.to_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}')
-        return output_file
+        return (output_file, tempo, key)
         
     def mp3_audio_features(self, file):
         output_file = convert_mp3.convert_mp3_to_wav(file)
