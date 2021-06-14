@@ -113,7 +113,7 @@ class AudioFeatureExtracter:
         #audio_feature_extracter = AudioFeatureExtracter(f'{DOWNLOADED_FOLDER}/{output_filename}')
         tempo, y, sr = self.get_BPM(file_path)
         key = self.computeKeyCl(file_path)
-        max_freq, min_freq, freq_diff = min_max_freq(y, sr)
+        max_freq, min_freq, freq_diff = self.min_max_freq(y, sr)
         new_song_dict = {"song_id":song_id,
                         "youtube_link":yt_link,
                         "output_file": output_file,
@@ -139,7 +139,7 @@ class AudioFeatureExtracter:
         title = output_file.replace(".wav", "")
         tempo, y, sr = self.get_BPM(file_path)
         key = self.computeKeyCl(file_path)
-        max_freq, min_freq, freq_diff = min_max_freq(y, sr)
+        max_freq, min_freq, freq_diff = self.min_max_freq(y, sr)
         new_song_dict = {"song_id":"no song_id",
                         "youtube_link":"no youtube_link",
                         "output_file": output_file,
@@ -150,7 +150,6 @@ class AudioFeatureExtracter:
                         "min_freq": min_freq,
                         "max_freq": max_freq,
                         "freq_diff": freq_diff}
-        
         self.df = pd.DataFrame(columns=new_song_dict.keys())
         self.df = self.df.append(new_song_dict, ignore_index=True)
         # write to csv
@@ -161,7 +160,6 @@ class AudioFeatureExtracter:
         csv_df.to_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}')
         return output_file
         
-
 ## Test ##
 # yt_link = "https://www.youtube.com/watch?v=L-2CyO8pc0E"
 # #file_name = '056247.mp3'
