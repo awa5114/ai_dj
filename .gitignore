@@ -5,3 +5,6 @@ raw_data/
 *checkpoint.ipynb
 *.pyc
 *.csv
+**/__pycache__/
+.python-version
+.vscode/
