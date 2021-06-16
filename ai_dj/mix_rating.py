@@ -1,11 +1,14 @@
 import pandas as pd
 import numpy as np
+from ai_dj import audio_features
 from ai_dj.neighbour_songs import create_camelot_wheel
+from ai_dj.audio_features import AudioFeatureExtracter
 import librosa
 import random
 
+
 def load_audio_features():
-    audio_features_updated = np.load("audio_features2.npy", allow_pickle=True)
+    audio_features_updated = np.load("ai_dj/data/audio_features2.npy", allow_pickle=True)
     audio_features_updated = pd.DataFrame(audio_features_updated)
     audio_features_updated.columns=["name", "output_file_mp3", "BPM", "key", 
                                         "wave_original", "mean_aplitude_original", "z_cross_original", "min_freq_original", "max_freq_original", "range_freq_original",
@@ -100,12 +103,11 @@ def get_mix_tracks(wave_data, target_tempo, n_stems=4, n_beats=32):
     result = []
     stems = {}
     stems_used = []
-    for i in range(n_stems):
-        
+    while len(result) < 4:
         stem = random.choice(possible_stems)
         audio_file = random.choice(audio_files)
         if stem in available_stems[audio_file]:
-            print("yes", audio_file, stem)
+            #print("yes", audio_file, stem)
             available_stems[audio_file].remove(stem)
             
             stem_wave = wave_data[audio_file]["predictions"][stem]
@@ -123,14 +125,13 @@ def get_mix_tracks(wave_data, target_tempo, n_stems=4, n_beats=32):
             rate = total_length_seconds/target_total_length_seconds
 
             current_result = librosa.effects.time_stretch(snippet, rate=rate)
-            print('next')
+            #print('next')
             #result += current_result
             result.append(current_result)
             
         else:
-            i -= 1
-            print("no", audio_file, stem)
-            next
+            #print("no", audio_file, stem)
+            continue
     
     return result, stems_used
 
@@ -142,28 +143,32 @@ def get_stem_info(df, result, stems):
     for ind, key in enumerate(stems):
         if key == "drums":
             n_drums += 1
-            if n_drums > 1:
-                wave_drums += result[ind]
-            else:
+            if n_drums == 1:
                 wave_drums = result[ind]
+            else:
+                if len(wave_drums) == len(result[ind]):
+                    wave_drums += result[ind]
         if key == "bass":
             n_bass += 1
-            if n_bass > 1:
-                wave_bass += result[ind]
-            else:
+            if n_bass == 1:
                 wave_bass = result[ind]
+            else:
+                if len(wave_bass) == len(result[ind]):
+                    wave_bass += result[ind]
         if key == "vocals":
             n_vocals += 1
-            if n_vocals> 1:
-                wave_vocals += result[ind]
-            else:
+            if n_vocals == 1:
                 wave_vocals = result[ind]
+            else:
+                if len(wave_vocals) == len(result[ind]):
+                    wave_vocals += result[ind]
         if key == "other":
             n_other += 1
-            if n_other > 1:
-                wave_other += result[ind]
-            else:
+            if n_other == 1:
                 wave_other = result[ind]
+            else:
+                if len(wave_other) == len(result[ind]):
+                    wave_other += result[ind]
     if n_drums == 0:
         wave_drums = [0]
     if n_bass == 0:
@@ -174,7 +179,10 @@ def get_stem_info(df, result, stems):
         wave_other = [0]
     
     mix = [result[0] + result[1] + result[2] + result[3]]
-    
+    extracter = AudioFeatureExtracter()
+    mean_ampl_mix = extracter.mean_amplitude(mix)
+    z_cross_mix = extracter.z_cross(mix)
+
     df["n_drums"] = n_drums
     df["n_bass"] = n_bass
     df["n_vocals"] = n_vocals,
@@ -183,19 +191,28 @@ def get_stem_info(df, result, stems):
     df["wave_bass"] = wave_bass,
     df["wave_vocals"] = wave_vocals,
     df["wave_other"] = wave_other,
-    df["mix"] = mix
+    df["mix"] = mix,
+    df["mean_ampl_mix"] = mean_ampl_mix, 
+    df["z_cross_mix"] = z_cross_mix,
     df["rating"] = 0
-    
     return df
 
 ## Test ##
 audio_features_df = load_audio_features()
-mix_tracks_df = audio_features_df.sample(2)
-wave_data, bpm_avg = get_wave_data(mix_tracks_df)
-mix_df = get_mix_features(mix_tracks_df)
-result, stems = get_mix_tracks(wave_data, bpm_avg)
-mix_df = get_stem_info(mix_df, result, stems)
-mixed_song = mix_df["mix"][0]
-sr = 44100
+mix_tracks_rating_df = pd.DataFrame()
+while len(mix_tracks_rating_df) < 10:
+    mix_tracks_df = audio_features_df.sample(2)
+    wave_data, bpm_avg = get_wave_data(mix_tracks_df)
+    mix_df = get_mix_features(mix_tracks_df)
+    result, stems = get_mix_tracks(wave_data, bpm_avg)
+    if len(result[0]) == len(result[1]) == len(result[2]) == len(result[3]):
+        mix_df = get_stem_info(mix_df, result, stems)
+        mix_tracks_rating_df = mix_tracks_rating_df.append(mix_df, ignore_index=True)
+    else:
+        continue
+    print(len(mix_tracks_rating_df))
+np.save("ai_dj/data/mix_tracks_rating_df.npy", mix_tracks_rating_df)
 ## find other way to play for rating
+#sr = 44100
+#mixed_song = mix_df["mix"][0]
 #Audio(data=mixed_song, rate=sr)

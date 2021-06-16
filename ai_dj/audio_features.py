@@ -105,6 +105,21 @@ class AudioFeatureExtracter:
         freq_diff = max_freq-min_freq
         return max_freq, min_freq, freq_diff
     
+    def z_cross(self, wave):
+        z = librosa.zero_crossings(np.array(wave))
+        #z_stack = librosa.util.stack([wave, z], axis=-1)
+        non_zero = np.nonzero(z)
+        non_zero = pd.Series(non_zero)
+        df = pd.DataFrame()
+        df["zero_crossing"] = non_zero[0]
+        df["difference"] = df["zero_crossing"].diff()
+        z_cross = df["difference"].mean()
+        return z_cross
+
+    def mean_amplitude(self, wave):
+        mean_amplitude = abs(np.array(wave)).mean()
+        return mean_amplitude
+    
     def youtube_audio_features(self, yt_link):
         youtubedl = YoutubeDownloader(yt_link)
         youtubedl.download_song()
