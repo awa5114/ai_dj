@@ -23,9 +23,9 @@ def index(filename, start, stop):
     blob = bucket.blob(f'data/audio_wav/{filename}')
     blob = blob.download_as_string()
 
-    data, sr = soundfile.read(io.BytesIO(blob))
+    data, sr = soundfile.read(io.BytesIO(blob), start=int(start), stop=int(stop))
     return {
-        "data":data[:,0][start:stop].tolist(),
+        "data":data[:,0].tolist(),
         "sr":sr
         }
 
