@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+from ai_dj import params
+from google.cloud import storage
+import soundfile
+import io
 
 app = FastAPI()
 app.add_middleware(
@@ -13,13 +17,17 @@ app.add_middleware(
 
 
 @app.get("/")
-def index():
-    return {"greeting": "Hello world!!!!!!!!!!!!!!"}
+def index(filename):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(params.BUCKET_NAME)
+    blob = bucket.blob(f'data/audio_wav/{filename}')
+    blob = blob.download_as_string()
 
-@app.get("/predict")
-def predict():
-    # create a datetime object from the user provided datetime
-    return {'mixed_audio': 'test'}
+    data, sr = soundfile.read(io.BytesIO(blob))
+    return {
+        "data":data[:,0].tolist(),
+        "sr":sr
+        }
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
