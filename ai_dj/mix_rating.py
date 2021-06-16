@@ -202,7 +202,7 @@ def get_stem_info(df, result, stems):
 ## Test ##
 audio_features_df = load_audio_features()
 mix_tracks_rating_df = pd.DataFrame()
-while len(mix_tracks_rating_df) < 300:
+while len(mix_tracks_rating_df) < 10:
     mix_tracks_df = audio_features_df.sample(2)
     wave_data, bpm_avg = get_wave_data(mix_tracks_df)
     mix_df = get_mix_features(mix_tracks_df)
@@ -217,7 +217,7 @@ while len(mix_tracks_rating_df) < 300:
 #np.save("ai_dj/data/mix_tracks_rating_df.npy", mix_tracks_rating_df)
 np.save(
          file_io.FileIO(
-             f'gs://{params.BUCKET_NAME}/{params.AUDIO_FEATURES_FOLDER}/mix_tracks_rating_df.npy',
+             f'gs://{params.BUCKET_NAME}/{params.AUDIO_FEATURES_FOLDER}/mix_tracks_rating_df30.npy',
              'w'), mix_tracks_rating_df)
 ## find other way to play for rating
 #sr = 44100
