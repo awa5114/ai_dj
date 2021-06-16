@@ -10,3 +10,4 @@ raw_data/
 **/__pycache__/
 .python-version
 .vscode/
+*.npy
