@@ -11,4 +11,5 @@ uvicorn
 google-cloud-storage
 
 # interface
-streamlit
+soundfile
+numpy

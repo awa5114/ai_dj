@@ -17,7 +17,7 @@ app.add_middleware(
 
 
 @app.get("/")
-def index(filename):
+def index(filename, start, stop):
     storage_client = storage.Client()
     bucket = storage_client.bucket(params.BUCKET_NAME)
     blob = bucket.blob(f'data/audio_wav/{filename}')
@@ -25,7 +25,7 @@ def index(filename):
 
     data, sr = soundfile.read(io.BytesIO(blob))
     return {
-        "data":data[:,0].tolist(),
+        "data":data[:,0][start:stop].tolist(),
         "sr":sr
         }
 
