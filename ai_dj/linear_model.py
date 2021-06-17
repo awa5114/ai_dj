@@ -15,19 +15,19 @@ import pickle
 def load_rated_mixes():
     f = io.BytesIO(
                 file_io.read_file_to_string(
-                    f'gs://ai_dj_batch627_data/data/audio_features/rated_mixes.csv',
+                    f'gs://ai_dj_batch627_data/data/rated_mixes/rated_mixes.csv',
                     binary_mode=True))
     df = np.load(f, allow_pickle=True)
     df = pd.DataFrame(df)
     df.columns=["mix_name", "bpm_difference", "camelot_distance", "z_cross_diff_original",
-                "mean_ampl_diff_original", "min_freq_diff_original", "max_freq_diff_original",
-                "range_freq_diff_original", "n_drums", "n_bass", "n_vocals", "n_other", "wave_drums",
-                "wave_bass", "wave_vocals", "wave_other", "mix", "mean_ampl_mix", "z_cross_mix", "rating"]
+            "mean_ampl_diff_original", "min_freq_diff_original", "max_freq_diff_original",
+            "range_freq_diff_original", "n_drums", "n_bass", "n_vocals", "n_other", 
+            "mean_ampl_mix", "z_cross_mix", "rating"]
     return df
 
-def create_pipeline(df):
+def create_pipeline():
     num_columns = ["bpm_difference", "z_cross_diff_original", "mean_ampl_diff_original", 
-               "min_freq_diff_original", "max_freq_diff_original", "range_freq_diff_original", "n_drums", 
+               "min_freq_diff_original", "max_freq_diff_original", "range_freq_diff_original", 
                "mean_ampl_mix", "z_cross_mix"]
     cat_columns = ["camelot_distance"]
 
@@ -47,10 +47,8 @@ def create_pipeline(df):
     return final_pipe
 
 if __name__=='__main__':
-    df = load_rated_mixes
-    X = df[["bpm_difference", "camelot_distance", "z_cross_diff_original", "mean_ampl_diff_original", 
-        "min_freq_diff_original", "max_freq_diff_original", "range_freq_diff_original", "n_drums", 
-        "n_bass", "n_vocals", "n_other", "mean_ampl_mix", "z_cross_mix"]]
+    df = load_rated_mixes()
+    X = df.drop(columns=["mix_name", "rating"])
     y = df["rating"]
     final_pipe = create_pipeline()
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)

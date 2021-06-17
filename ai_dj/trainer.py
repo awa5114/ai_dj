@@ -9,6 +9,7 @@ import os
 import shutil
 from google.cloud import storage
 import pandas as pd
+import pickle
 
 from ai_dj import params
 
@@ -127,16 +128,24 @@ def mix_tracks(new_song, audio_features_df):
 
 if __name__=='__main__':
     youtube_link = get_youtube_link()
+    #check existing database
+    #load names_yt_link csv
+    #if yt link not in csv:
     title, output_filename = extract_wav_from_yt_link(youtube_link)
     print(title)
     new_song = update_new_audio_features(output_filename, title)
-    print(new_song)
+    #else:
+    #get audio_features.npy
+    #get random other name from names_yt_link csv
+    #get audio_features.npy from other track
+    #append audio_files with each rows from the songs
+    model = pickle.load(open("pipeline.pkl","rb"))
+    predicted_rating = 0
+    while predicted_rating < 5:
+        mixed_song, mix_tracks_rating_df = mix_tracks(new_song, audio_features_df)
+        predicted_rating = model.predict(mix_tracks_rating_df)
+    final_mix = mixed_song
     
-    # audio_features_df = load_audio_features()
-    # #import model
-    # predicted_rating = 0
-    # while predicted_rating < 5:
-    #     mixed_song, mix_tracks_rating_df = mix_tracks(new_song, audio_features_df)
-    #     predicted_rating = model.predict(mix_tracks_rating_df)
-    # final_mix = mixed_song
+    #if rating submitted, add to rated_mixes.csv
+    #run linear_model
      
