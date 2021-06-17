@@ -1,5 +1,5 @@
 import youtube_dl
-from ai_dj import gcp_storage, params,
+from ai_dj import gcp_storage, params
 from ai_dj.mix_rating import load_audio_features, get_wave_data, get_mix_features, get_mix_tracks, get_stem_info
 from ai_dj.audio_features import get_BPM, computeKeyCl, min_max_freq, mean_amplitude, z_cross
 from ai_dj.download_youtube import download_wav_and_metadata
@@ -132,11 +132,11 @@ if __name__=='__main__':
     new_song = update_new_audio_features(output_filename, title)
     print(new_song)
     
-    audio_features_df = load_audio_features()
-    #import model
-    predicted_rating = 0
-    while predicted_rating < 5:
-        mixed_song, mix_tracks_rating_df = mix_tracks(new_song, audio_features_df)
-        predicted_rating = model.predict(mix_tracks_rating_df)
-    final_mix = mixed_song
+    # audio_features_df = load_audio_features()
+    # #import model
+    # predicted_rating = 0
+    # while predicted_rating < 5:
+    #     mixed_song, mix_tracks_rating_df = mix_tracks(new_song, audio_features_df)
+    #     predicted_rating = model.predict(mix_tracks_rating_df)
+    # final_mix = mixed_song
      
