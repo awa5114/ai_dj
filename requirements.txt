@@ -8,10 +8,8 @@ wheel
 # API
 fastapi
 uvicorn
+google-cloud-storage
 
 # interface
-streamlit
-<<<<<<< HEAD
-=======
-
->>>>>>> main
+soundfile
+numpy

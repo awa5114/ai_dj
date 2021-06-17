@@ -28,7 +28,7 @@ class AudioFeatureExtracter:
 
         # Convert the frame indices of beat events into timestamps
         beat_times = librosa.frames_to_time(beat_frames, sr=sr)
-        return tempo, beat_frames, beat_times
+        return tempo, y, sr
 
     def computeKey(self, afAudioData, f_s, afWindow=None, iBlockLength=4096, iHopLength=2048):
 
@@ -92,22 +92,53 @@ class AudioFeatureExtracter:
         
         return cKey
     
+    def min_max_freq(y, sr):
+        librosa.feature.spectral_rolloff(y=y, sr=sr)
+        rolloff = librosa.feature.spectral_rolloff(y=y, sr=sr, roll_percent=0.99)
+        max_freq = rolloff.max()
+        rolloff_min = librosa.feature.spectral_rolloff(y=y, sr=sr, roll_percent=0.01)
+        sorted_rolloff = sorted(rolloff_min[0])
+        for val in sorted_rolloff:
+            if val > 0:
+                min_freq = val
+                break
+        freq_diff = max_freq-min_freq
+        return max_freq, min_freq, freq_diff
+    
+    def z_cross(self, wave):
+        z = librosa.zero_crossings(np.array(wave))
+        #z_stack = librosa.util.stack([wave, z], axis=-1)
+        non_zero = np.nonzero(z)
+        non_zero = pd.Series(non_zero)
+        df = pd.DataFrame()
+        df["zero_crossing"] = non_zero[0]
+        df["difference"] = df["zero_crossing"].diff()
+        z_cross = df["difference"].mean()
+        return z_cross
+
+    def mean_amplitude(self, wave):
+        mean_amplitude = abs(np.array(wave)).mean()
+        return mean_amplitude
+    
     def youtube_audio_features(self, yt_link):
         youtubedl = YoutubeDownloader(yt_link)
         youtubedl.download_song()
         title, song_id, output_file, yt_link = youtubedl.download_metadata()
         file_path = f'{DOWNLOADED_FOLDER}/{output_file}'
         #audio_feature_extracter = AudioFeatureExtracter(f'{DOWNLOADED_FOLDER}/{output_filename}')
-        tempo, beat_frames, beat_times = self.get_BPM(file_path)
+        tempo, y, sr = self.get_BPM(file_path)
         key = self.computeKeyCl(file_path)
+        max_freq, min_freq, freq_diff = self.min_max_freq(y, sr)
         new_song_dict = {"song_id":song_id,
                         "youtube_link":yt_link,
                         "output_file": output_file,
                         "title": title, 
                         "BPM": tempo, 
                         "key": key, 
-                        "beat_frames": beat_frames, 
-                        "beat_times": beat_times}
+                        "wave_array":y, 
+                        "min_freq": min_freq,
+                        "max_freq": max_freq,
+                        "freq_diff": freq_diff}
         self.df = pd.DataFrame(columns=new_song_dict.keys())
         self.df = self.df.append(new_song_dict, ignore_index=True)
         # write to csv
@@ -121,16 +152,19 @@ class AudioFeatureExtracter:
         output_file = convert_mp3.convert_mp3_to_wav(file)
         file_path = f'{DOWNLOADED_FOLDER}/{output_file}'
         title = output_file.replace(".wav", "")
-        tempo, beat_frames, beat_times = self.get_BPM(file_path)
+        tempo, y, sr = self.get_BPM(file_path)
         key = self.computeKeyCl(file_path)
+        max_freq, min_freq, freq_diff = self.min_max_freq(y, sr)
         new_song_dict = {"song_id":"no song_id",
                         "youtube_link":"no youtube_link",
                         "output_file": output_file,
                         "title": title, 
                         "BPM": tempo, 
                         "key": key, 
-                        "beat_frames": beat_frames, 
-                        "beat_times": beat_times}
+                        "wave_array":y, 
+                        "min_freq": min_freq,
+                        "max_freq": max_freq,
+                        "freq_diff": freq_diff}
         self.df = pd.DataFrame(columns=new_song_dict.keys())
         self.df = self.df.append(new_song_dict, ignore_index=True)
         # write to csv

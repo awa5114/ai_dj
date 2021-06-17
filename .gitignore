@@ -1,3 +1,5 @@
+ai-dj.json
+ai_dj.egg-info/
 *.mp3
 *.wav
 raw_data/
@@ -5,3 +7,7 @@ raw_data/
 *checkpoint.ipynb
 *.pyc
 *.csv
+**/__pycache__/
+.python-version
+.vscode/
+*.npy
