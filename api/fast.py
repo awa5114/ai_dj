@@ -5,6 +5,8 @@ import uvicorn
 from ai_dj import params
 from google.cloud import storage
 import io
+import os
+from ai_dj.trainer import get_mix
 
 app = FastAPI()
 app.add_middleware(
@@ -22,6 +24,20 @@ def index(filename):
     storage_client = storage.Client()
     bucket = storage_client.bucket(params.BUCKET_NAME)
     blob = bucket.blob(f'data/audio_wav/1019315 Guido Sava - Fever (Original Mix).wav')
+    bts = blob.download_as_bytes()
+    stream = io.BytesIO(bts)
+
+    return StreamingResponse(stream, media_type="audio/wav")
+
+
+@app.get('/get-youtube')
+def get_youtube(url):
+    bucket_location = get_mix(url)
+    bucket_folder, bucket_file = os.path.split(bucket_location)
+
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_folder)
+    blob = bucket.blob(bucket_file)
     bts = blob.download_as_bytes()
     stream = io.BytesIO(bts)
 
