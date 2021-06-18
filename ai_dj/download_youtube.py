@@ -27,4 +27,21 @@ class YoutubeDownloader:
         song_id = meta["id"]
         output_filename = f'{title}-{song_id}.wav'
         return title, song_id, output_filename, self.yt_link
-
+    
+def download_wav_and_metadata(yt_link):
+    ydl_opts = {
+        'outtmpl': 'ai_dj/data/downloaded_music/%(title)s-%(id)s.%(ext)s',
+        'format': 'bestaudio/best',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'wav',
+            'preferredquality': '192'
+            }],
+        }
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([yt_link])
+        meta = ydl.extract_info(yt_link, download=False)
+    title = meta["title"]
+    song_id = meta["id"]
+    output_filename = f'{title}-{song_id}.wav'
+    return title, output_filename

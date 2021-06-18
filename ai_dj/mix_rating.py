@@ -199,26 +199,26 @@ def get_stem_info(df, result, stems):
     df["rating"] = 0
     return df
 
-## Test ##
-audio_features_df = load_audio_features()
-mix_tracks_rating_df = pd.DataFrame()
-while len(mix_tracks_rating_df) < 300:
-    mix_tracks_df = audio_features_df.sample(2)
-    wave_data, bpm_avg = get_wave_data(mix_tracks_df)
-    mix_df = get_mix_features(mix_tracks_df)
-    result, stems = get_mix_tracks(wave_data, bpm_avg)
-    if len(result[0]) == len(result[1]) == len(result[2]) == len(result[3]):
-        mix_df = get_stem_info(mix_df, result, stems)
-        mixed_song = mix_df["mix"][0]
-        mix_tracks_rating_df = mix_tracks_rating_df.append(mix_df, ignore_index=True)
-    else:
-        continue
-    print(len(mix_tracks_rating_df))
-#np.save("ai_dj/data/mix_tracks_rating_df.npy", mix_tracks_rating_df)
-np.save(
-         file_io.FileIO(
-             f'gs://{params.BUCKET_NAME}/{params.AUDIO_FEATURES_FOLDER}/mix_tracks_rating_df.npy',
-             'w'), mix_tracks_rating_df)
-## find other way to play for rating
-#sr = 44100
-#Audio(data=mixed_song, rate=sr)
+# ## Test ##
+# audio_features_df = load_audio_features()
+# mix_tracks_rating_df = pd.DataFrame()
+# while len(mix_tracks_rating_df) < 10:
+#     mix_tracks_df = audio_features_df.sample(2)
+#     wave_data, bpm_avg = get_wave_data(mix_tracks_df)
+#     mix_df = get_mix_features(mix_tracks_df)
+#     result, stems = get_mix_tracks(wave_data, bpm_avg)
+#     if len(result[0]) == len(result[1]) == len(result[2]) == len(result[3]):
+#         mix_df = get_stem_info(mix_df, result, stems)
+#         mixed_song = mix_df["mix"][0]
+#         mix_tracks_rating_df = mix_tracks_rating_df.append(mix_df, ignore_index=True)
+#     else:
+#         continue
+#     print(len(mix_tracks_rating_df))
+# #np.save("ai_dj/data/mix_tracks_rating_df.npy", mix_tracks_rating_df)
+# np.save(
+#          file_io.FileIO(
+#              f'gs://{params.BUCKET_NAME}/{params.AUDIO_FEATURES_FOLDER}/mix_tracks_rating_df30.npy',
+#              'w'), mix_tracks_rating_df)
+# ## find other way to play for rating
+# #sr = 44100
+# #Audio(data=mixed_song, rate=sr)
