@@ -23,7 +23,9 @@ def load_rated_mixes():
             "mean_ampl_diff_original", "min_freq_diff_original", "max_freq_diff_original",
             "range_freq_diff_original", "n_drums", "n_bass", "n_vocals", "n_other", 
             "mean_ampl_mix", "z_cross_mix", "rating"]
+    print(df.head(1))
     return df
+
 
 def create_pipeline():
     num_columns = ["bpm_difference", "z_cross_diff_original", "mean_ampl_diff_original", 
@@ -48,7 +50,10 @@ def create_pipeline():
 
 if __name__=='__main__':
     df = load_rated_mixes()
-    X = df.drop(columns=["mix_name", "rating"])
+    X = df[["bpm_difference", "camelot_distance", "z_cross_diff_original",
+            "mean_ampl_diff_original", "min_freq_diff_original", "max_freq_diff_original",
+            "range_freq_diff_original", "n_drums", "n_bass", "n_vocals", "n_other", 
+            "mean_ampl_mix", "z_cross_mix"]]
     y = df["rating"]
     final_pipe = create_pipeline()
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)

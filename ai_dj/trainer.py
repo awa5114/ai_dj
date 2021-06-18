@@ -15,6 +15,7 @@ from tensorflow.python.lib.io import file_io
 import io
 import pandas as pd
 import pickle
+from scipy.io.wavfile import write
 
 from ai_dj import params
 
@@ -45,7 +46,10 @@ def get_audio_features(name):
                 f'gs://ai_dj_batch627_data/data/audio_features/{name}.npy',
                 binary_mode=True))
     audio_features_df = np.load(f, allow_pickle=True)
-    audio_features_df = pd.DataFrame(audio_features_df)
+    if len(audio_features_df) > 1:
+        audio_features_df = pd.DataFrame(audio_features_df.T)
+    else:
+        audio_features_df = pd.DataFrame(audio_features_df)
     audio_features_df.columns=["name", "output_file_mp3", "BPM", "key", 
                                     "wave_original", "mean_aplitude_original", "z_cross_original", "min_freq_original", "max_freq_original", "range_freq_original",
                                     "wave_bass", "mean_aplitude_bass", "z_cross_bass", "min_freq_bass", "max_freq_bass", "range_freq_bass",
@@ -146,7 +150,7 @@ def mix_tracks(new_song, other_song):
     mix_tracks_rating_df = pd.DataFrame()
     while len(mix_tracks_rating_df) < 1:
         mix_tracks_df = new_song
-        mix_tracks_df.append(other_song.sample(1), ignore_index=True)
+        mix_tracks_df = mix_tracks_df.append(other_song, ignore_index=True)
         wave_data, bpm_avg = get_wave_data(mix_tracks_df)
         mix_df = get_mix_features(mix_tracks_df)
         result, stems = get_mix_tracks(wave_data, bpm_avg)
@@ -161,7 +165,7 @@ def mix_tracks(new_song, other_song):
 if __name__=='__main__':
     youtube_link = get_youtube_link()
     audio_feature_track_names = get_audio_features_db()
-    if not youtube_link in audio_feature_track_names["youtube_link"]:
+    if not audio_feature_track_names["youtube_link"].isin([youtube_link]).any():
         title, output_filename = extract_wav_from_yt_link(youtube_link)
         print(title)
         new_song = update_new_audio_features(output_filename, title)
@@ -173,7 +177,8 @@ if __name__=='__main__':
                       "youtube_link": youtube_link,
                       "audio_features_file": f'gs://ai_dj_batch627_data/data/audio_features/{title}.npy'
                       }
-        audio_feature_track_names.append(track_info, ignore_index=True)
+        audio_feature_track_names = audio_feature_track_names.append(track_info, ignore_index=True)
+        print(audio_feature_track_names["youtube_link"])
         np.save(
          file_io.FileIO(
              f'gs://ai_dj_batch627_data/data/audio_features/audio_features_track_names.csv',
@@ -182,17 +187,30 @@ if __name__=='__main__':
         name = audio_feature_track_names[audio_feature_track_names["youtube_link"] == youtube_link]["name"].values[0]
         print(name)
         new_song = get_audio_features(name)
-    other_name = audio_feature_track_names.sample(1)["name"].values[0]
-    print(other_name)
-    other_song = get_audio_features(other_name)
-    audio_files = [name, other_song]
     model = pickle.load(open("pipeline.pkl","rb"))
     predicted_rating = 0
-    while predicted_rating < 5:
+    n = 0
+    while predicted_rating < 5 and n < 5:
+        other_name = audio_feature_track_names.sample(1)["name"].values[0]
+        print(other_name)
+        other_song = get_audio_features(other_name)
+        audio_files = [name, other_song]
         mixed_song, mix_tracks_rating_df = mix_tracks(new_song, other_song)
-        predicted_rating = model.predict(mix_tracks_rating_df)
+        mix_tracks_predict_df = mix_tracks_rating_df[["bpm_difference", "camelot_distance", "z_cross_diff_original",
+            "mean_ampl_diff_original", "min_freq_diff_original", "max_freq_diff_original",
+            "range_freq_diff_original", "n_drums", "n_bass", "n_vocals", "n_other", 
+            "mean_ampl_mix", "z_cross_mix"]]
+        predicted_rating = model.predict(mix_tracks_predict_df)[0]
         print(predicted_rating)
+        n += 1
     final_mix = mixed_song
+    # export a mix to a wav file
+    final_mix = np.array(final_mix)
+    sr = 44100
+    mixed_name = f"{name} - {other_name}"
+    write(f"{params.MIXED_AUDIO_FOLDER}{mixed_name}.wav", sr, final_mix)
+    gcp_storage.upload_mixed_audio(f'{mixed_name}.wav')
+    
     
     #if rating submitted, add to rated_mixes.csv
     #run linear_model
