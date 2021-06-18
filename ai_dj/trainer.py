@@ -162,8 +162,7 @@ def mix_tracks(new_song, other_song):
             continue
     return mixed_song, mix_tracks_rating_df
 
-if __name__=='__main__':
-    youtube_link = get_youtube_link()
+def get_mix(youtube_link):
     audio_feature_track_names = get_audio_features_db()
     if not audio_feature_track_names["youtube_link"].isin([youtube_link]).any():
         title, output_filename = extract_wav_from_yt_link(youtube_link)
@@ -208,6 +207,9 @@ if __name__=='__main__':
     final_mix = np.array(final_mix)
     sr = 44100
     mixed_name = f"{name} - {other_name}"
+    if os.path.isdir(f'{params.MIXED_AUDIO_FOLDER}'):
+        shutil.rmtree(f'{params.MIXED_AUDIO_FOLDER}')
+        os.mkdir(f'{params.MIXED_AUDIO_FOLDER}/')
     write(f"{params.MIXED_AUDIO_FOLDER}{mixed_name}.wav", sr, final_mix)
     gcp_storage.upload_mixed_audio(f'{mixed_name}.wav')
     
