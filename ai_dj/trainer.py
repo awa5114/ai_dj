@@ -189,7 +189,7 @@ def get_mix(youtube_link):
     model = pickle.load(open("pipeline.pkl","rb"))
     predicted_rating = 0
     n = 0
-    while predicted_rating < 5 and n < 5:
+    while predicted_rating < 5 or n < 5:
         other_name = audio_feature_track_names.sample(1)["name"].values[0]
         print(other_name)
         other_song = get_audio_features(other_name)
@@ -212,7 +212,7 @@ def get_mix(youtube_link):
         os.mkdir(f'{params.MIXED_AUDIO_FOLDER}/')
     write(f"{params.MIXED_AUDIO_FOLDER}{mixed_name}.wav", sr, final_mix)
     gcp_storage.upload_mixed_audio(f'{mixed_name}.wav')
-    
+    return 
     
     #if rating submitted, add to rated_mixes.csv
     #run linear_model
