@@ -212,7 +212,8 @@ def get_mix(youtube_link):
         os.mkdir(f'{params.MIXED_AUDIO_FOLDER}/')
     write(f"{params.MIXED_AUDIO_FOLDER}{mixed_name}.wav", sr, final_mix)
     gcp_storage.upload_mixed_audio(f'{mixed_name}.wav')
-    return 
+
+    return f'{params.MIXED_FOLDER}/{mixed_name}.wav'
     
     #if rating submitted, add to rated_mixes.csv
     #run linear_model
