@@ -68,37 +68,37 @@ def create_camelot_wheel():
     camelot_wheel = camelot_wheel.append(dicts, ignore_index=True)
     return camelot_wheel
 
-def get_neighbor_keys(key):
-    camelot_wheel = create_camelot_wheel()
-    cl_key = camelot_wheel[camelot_wheel["key"] == key]
-    neighbor_top = cl_key["neighbor_top"].values[0]
-    neighbor_left = cl_key["neighbor_left"].values[0]
-    neighbor_right = cl_key["neighbor_right"].values[0]
-    neighbors = [key, neighbor_top, neighbor_left, neighbor_right]
-    return neighbors
+# def get_neighbor_keys(key):
+#     camelot_wheel = create_camelot_wheel()
+#     cl_key = camelot_wheel[camelot_wheel["key"] == key]
+#     neighbor_top = cl_key["neighbor_top"].values[0]
+#     neighbor_left = cl_key["neighbor_left"].values[0]
+#     neighbor_right = cl_key["neighbor_right"].values[0]
+#     neighbors = [key, neighbor_top, neighbor_left, neighbor_right]
+#     return neighbors
 
-def filter_bpm_keys(output_file, bpm, key):
-    gcp_storage.get_audio_features_csv()
-    audio_df = pd.read_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}', index_col=0)
-    audio_df = audio_df.drop(columns=["beat_frames", "beat_times"])
-    audio_df = audio_df[audio_df["output_file"] != output_file]
-    audio_df["BPM"] = audio_df["BPM"].round()
-    bpms = [round(bpm), round(bpm/2)]
-    print(bpms)
-    bpm_df = audio_df[audio_df["BPM"].isin(bpms)]
-    same_key_df = bpm_df[bpm_df["key"] == key]
-    if len(same_key_df) > 1:
-        return same_key_df
-    else:
-        neigborgs = get_neighbor_keys(key)
-        print(neigborgs)
-        neigborgs_key_df = bpm_df[bpm_df["key"].isin(neigborgs)]
-        print(neigborgs_key_df)
-        return neigborgs_key_df
+# def filter_bpm_keys(output_file, bpm, key):
+#     gcp_storage.get_audio_features_csv()
+#     audio_df = pd.read_csv(f'{params.DATA_FOLDER}/{params.AUDIO_FEATURES_FILE}', index_col=0)
+#     audio_df = audio_df.drop(columns=["beat_frames", "beat_times"])
+#     audio_df = audio_df[audio_df["output_file"] != output_file]
+#     audio_df["BPM"] = audio_df["BPM"].round()
+#     bpms = [round(bpm), round(bpm/2)]
+#     print(bpms)
+#     bpm_df = audio_df[audio_df["BPM"].isin(bpms)]
+#     same_key_df = bpm_df[bpm_df["key"] == key]
+#     if len(same_key_df) > 1:
+#         return same_key_df
+#     else:
+#         neigborgs = get_neighbor_keys(key)
+#         print(neigborgs)
+#         neigborgs_key_df = bpm_df[bpm_df["key"].isin(neigborgs)]
+#         print(neigborgs_key_df)
+#         return neigborgs_key_df
 
-def select_songs(neighbors_songs):
-    two_songs = neighbors_songs.sample(2)
-    return two_songs
+# def select_songs(neighbors_songs):
+#     two_songs = neighbors_songs.sample(2)
+#     return two_songs
 
 ## Test
 #neighbors_songs = filter_bpm_keys(139.6748310810811, "G# Maj")
