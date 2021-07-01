@@ -3,6 +3,7 @@ from ai_dj.mix_rating import get_wave_data, get_mix_features, get_mix_tracks, ge
 from ai_dj.audio_features import get_BPM, computeKeyCl, min_max_freq, mean_amplitude, z_cross
 from ai_dj.download_youtube import download_wav_and_metadata
 from ai_dj.split_audio import split_tracks
+from ai_dj.linear_model import load_rated_mixes, update_model
 import librosa
 import numpy as np
 import pandas as pd
@@ -14,12 +15,19 @@ import pandas as pd
 import pickle
 from scipy.io.wavfile import write
 
-from ai_dj import params
+## Clean local folders
+def clean_local_folders():
+    if os.path.isdir(params.DOWNLOADED_FOLDER):
+            shutil.rmtree(params.DOWNLOADED_FOLDER)
+    os.mkdir(params.DOWNLOADED_FOLDER)
+    if os.path.isdir(params.MIXED_AUDIO_FOLDER):
+            shutil.rmtree(params.MIXED_AUDIO_FOLDER)
+    os.mkdir(params.MIXED_AUDIO_FOLDER)
 
 ## Get youtube_link from app
 def get_youtube_link():
-    youtube_link = "https://www.youtube.com/watch?v=Tx9zMFodNtA"
-    start = 60
+    youtube_link = "https://www.youtube.com/watch?v=ZwI-Bm2TTio"
+    start = 0
     return youtube_link, start
 
 ## Extract youtube_wav file & audiofeatures + upload to the folder
@@ -163,6 +171,7 @@ def mix_tracks(new_song, other_song):
     return mixed_song, mix_tracks_rating_df
 
 def get_mix(youtube_link, start):
+    clean_local_folders()
     audio_feature_track_names = get_audio_features_db()
     if not audio_feature_track_names["youtube_link"].isin([f'{youtube_link}-{start}']).any():
         title, output_filename = extract_wav_from_yt_link(youtube_link)
@@ -193,6 +202,8 @@ def get_mix(youtube_link, start):
     n = 0
     while predicted_rating < 5.0:
         if n < 5:
+            # other_name = name
+            # while other_name == name:
             other_name = audio_feature_track_names.sample(1)["name"].values[0]
             print(other_name)
             other_song = get_audio_features(other_name)
@@ -217,15 +228,24 @@ def get_mix(youtube_link, start):
         os.mkdir(f'{params.MIXED_AUDIO_FOLDER}/')
     write(f"{params.MIXED_AUDIO_FOLDER}{mixed_name}.wav", sr, final_mix)
     gcp_storage.upload_mixed_audio(f'{mixed_name}.wav')
-
-    return f'{params.MIXED_FOLDER}/{mixed_name}.wav'
+    mix_file = f'{params.MIXED_FOLDER}/{mixed_name}.wav'
+    mix_rating_df = mix_tracks_rating_df.drop(columns=["mix"])
+    return mix_file, mixed_name, mix_rating_df
     
-def update_model_with_rating(rating):
-    #if rating submitted, add to rated_mixes.csv
-    #run linear_model
-    pass
+def update_model_with_rating(rating, mix_rating_df):
+    df = load_rated_mixes()
+    mix_rating_df["rating"] = rating
+    df = df.append(mix_rating_df, ignore_index=True)
+    df.to_csv(f"{params.DATA_FOLDER}/rated_mixes.csv", index=False)
+    np.save(
+         file_io.FileIO(
+             f'gs://ai_dj_batch627_data/data/rated_mixes/rated_mixes.csv',
+             'w'), df)
+    update_model(df)
+    return
 
 if __name__=='__main__':
     youtube_link, start = get_youtube_link()
-    mix_file = get_mix(youtube_link, start)
-    print(mix_file)
+    mix_file, mix_name, mix_rating_df = get_mix(youtube_link, start)
+    update_model_with_rating(0, mix_rating_df)
+    

@@ -8,7 +8,7 @@ from pyACA.ToolComputeHann import ToolComputeHann
 from pyACA.FeatureSpectralPitchChroma import FeatureSpectralPitchChroma
 from pyACA.ToolPreprocAudio import ToolPreprocAudio
 from pyACA.ToolReadAudio import ToolReadAudio
-from ai_dj.params import DOWNLOADED_FOLDER, RAW_DATA_FOLDER
+from ai_dj.params import DOWNLOADED_FOLDER
 from ai_dj import convert_mp3
 from os import path
 from ai_dj import gcp_storage
