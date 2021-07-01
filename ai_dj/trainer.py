@@ -1,7 +1,5 @@
-import youtube_dl
 from ai_dj import gcp_storage, params
-from ai_dj import audio_features
-from ai_dj.mix_rating import load_audio_features, get_wave_data, get_mix_features, get_mix_tracks, get_stem_info
+from ai_dj.mix_rating import get_wave_data, get_mix_features, get_mix_tracks, get_stem_info
 from ai_dj.audio_features import get_BPM, computeKeyCl, min_max_freq, mean_amplitude, z_cross
 from ai_dj.download_youtube import download_wav_and_metadata
 from ai_dj.split_audio import split_tracks
@@ -10,7 +8,6 @@ import numpy as np
 import pandas as pd
 import os
 import shutil
-from google.cloud import storage
 from tensorflow.python.lib.io import file_io
 import io
 import pandas as pd
@@ -21,13 +18,16 @@ from ai_dj import params
 
 ## Get youtube_link from app
 def get_youtube_link():
-    youtube_link = "https://www.youtube.com/watch?v=SKUk9RUacDQ"
-    return youtube_link
+    youtube_link = "https://www.youtube.com/watch?v=Tx9zMFodNtA"
+    start = 60
+    return youtube_link, start
 
 ## Extract youtube_wav file & audiofeatures + upload to the folder
 def extract_wav_from_yt_link(youtube_link):
     title, output_filename = download_wav_and_metadata(youtube_link)
-    gcp_storage.upload_youtube_wav(output_filename)
+    print("download done")
+    #gcp_storage.upload_youtube_wav(output_filename)
+    print("file not uploaded to gcp")
     return title, output_filename
 
 def get_audio_features_db():
@@ -70,7 +70,7 @@ def update_new_audio_features(output_filename, title):
     z_cross_original = z_cross(y)
     audio_files = [output_filename]
     print("ready to split files")
-    mix_data = split_tracks(audio_files, 4)
+    mix_data = split_tracks(audio_files, 4, 60)
     wave_bass = mix_data[output_filename]["prediction"]["bass"][:,0]
     max_freq_bass, min_freq_bass, range_freq_bass = min_max_freq(wave_bass, sr)
     mean_aplitude_bass = mean_amplitude(wave_bass)
@@ -162,10 +162,11 @@ def mix_tracks(new_song, other_song):
             continue
     return mixed_song, mix_tracks_rating_df
 
-def get_mix(youtube_link):
+def get_mix(youtube_link, start):
     audio_feature_track_names = get_audio_features_db()
-    if not audio_feature_track_names["youtube_link"].isin([youtube_link]).any():
+    if not audio_feature_track_names["youtube_link"].isin([f'{youtube_link}-{start}']).any():
         title, output_filename = extract_wav_from_yt_link(youtube_link)
+        title = f'{title}-{start}'
         print(title)
         new_song = update_new_audio_features(output_filename, title)
         np.save(
@@ -173,15 +174,16 @@ def get_mix(youtube_link):
              f'gs://ai_dj_batch627_data/data/audio_features/{title}.npy',
              'w'), new_song)
         track_info = {"name": title, 
-                      "youtube_link": youtube_link,
+                      "youtube_link": f'{youtube_link}-{start}',
                       "audio_features_file": f'gs://ai_dj_batch627_data/data/audio_features/{title}.npy'
                       }
         audio_feature_track_names = audio_feature_track_names.append(track_info, ignore_index=True)
-        print(audio_feature_track_names["youtube_link"])
+        # print(audio_feature_track_names["youtube_link"])
         np.save(
          file_io.FileIO(
              f'gs://ai_dj_batch627_data/data/audio_features/audio_features_track_names.csv',
              'w'), audio_feature_track_names)
+        name = title
     else:
         name = audio_feature_track_names[audio_feature_track_names["youtube_link"] == youtube_link]["name"].values[0]
         print(name)
@@ -189,19 +191,22 @@ def get_mix(youtube_link):
     model = pickle.load(open("pipeline.pkl","rb"))
     predicted_rating = 0
     n = 0
-    while predicted_rating < 5 or n < 5:
-        other_name = audio_feature_track_names.sample(1)["name"].values[0]
-        print(other_name)
-        other_song = get_audio_features(other_name)
-        audio_files = [name, other_song]
-        mixed_song, mix_tracks_rating_df = mix_tracks(new_song, other_song)
-        mix_tracks_predict_df = mix_tracks_rating_df[["bpm_difference", "camelot_distance", "z_cross_diff_original",
-            "mean_ampl_diff_original", "min_freq_diff_original", "max_freq_diff_original",
-            "range_freq_diff_original", "n_drums", "n_bass", "n_vocals", "n_other", 
-            "mean_ampl_mix", "z_cross_mix"]]
-        predicted_rating = model.predict(mix_tracks_predict_df)[0]
-        print(predicted_rating)
-        n += 1
+    while predicted_rating < 5.0:
+        if n < 5:
+            other_name = audio_feature_track_names.sample(1)["name"].values[0]
+            print(other_name)
+            other_song = get_audio_features(other_name)
+            # audio_files = [name, other_song]
+            mixed_song, mix_tracks_rating_df = mix_tracks(new_song, other_song)
+            mix_tracks_predict_df = mix_tracks_rating_df[["bpm_difference", "camelot_distance", "z_cross_diff_original",
+                "mean_ampl_diff_original", "min_freq_diff_original", "max_freq_diff_original",
+                "range_freq_diff_original", "n_drums", "n_bass", "n_vocals", "n_other", 
+                "mean_ampl_mix", "z_cross_mix"]]
+            predicted_rating = model.predict(mix_tracks_predict_df)[0]
+            print(predicted_rating)
+            n += 1
+        else:
+            break
     final_mix = mixed_song
     # export a mix to a wav file
     final_mix = np.array(final_mix)
@@ -215,6 +220,12 @@ def get_mix(youtube_link):
 
     return f'{params.MIXED_FOLDER}/{mixed_name}.wav'
     
+def update_model_with_rating(rating):
     #if rating submitted, add to rated_mixes.csv
     #run linear_model
-     
+    pass
+
+if __name__=='__main__':
+    youtube_link, start = get_youtube_link()
+    mix_file = get_mix(youtube_link, start)
+    print(mix_file)

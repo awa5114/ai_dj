@@ -11,3 +11,4 @@ raw_data/
 .python-version
 .vscode/
 *.npy
+old_py_files/

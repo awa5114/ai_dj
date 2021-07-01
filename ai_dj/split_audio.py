@@ -4,7 +4,7 @@ from ai_dj import gcp_storage
 import madmom
 import librosa
 
-def split_tracks(audio_files, n_stems):
+def split_tracks(audio_files, n_stems, start=0):
     mix_data = {}
     for audio_file in audio_files:
         mix_data[audio_file] = {}
@@ -12,7 +12,8 @@ def split_tracks(audio_files, n_stems):
         # load audio with madmom
         audio_file = str(audio_file)
         file_path = f'{DOWNLOADED_FOLDER}/{audio_file}'
-        audio, sr = madmom.io.audio.load_ffmpeg_file(file_path, sample_rate=44100, dtype=float, num_channels=2, start=0, stop=60)
+        stop = start+60
+        audio, sr = madmom.io.audio.load_ffmpeg_file(file_path, sample_rate=44100, dtype=float, num_channels=2, start=start, stop=stop)
         audio = madmom.audio.signal.normalize(audio)
         
         # beat tracking
