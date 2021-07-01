@@ -23,7 +23,7 @@ def load_rated_mixes():
             "mean_ampl_diff_original", "min_freq_diff_original", "max_freq_diff_original",
             "range_freq_diff_original", "n_drums", "n_bass", "n_vocals", "n_other", 
             "mean_ampl_mix", "z_cross_mix", "rating"]
-    print(df.head(1))
+    # print(df.head(1))
     return df
 
 
@@ -48,8 +48,8 @@ def create_pipeline():
 
     return final_pipe
 
-if __name__=='__main__':
-    df = load_rated_mixes()
+def update_model(df):
+    df = df[df["rating"] != 0]
     X = df[["bpm_difference", "camelot_distance", "z_cross_diff_original",
             "mean_ampl_diff_original", "min_freq_diff_original", "max_freq_diff_original",
             "range_freq_diff_original", "n_drums", "n_bass", "n_vocals", "n_other", 
@@ -62,3 +62,4 @@ if __name__=='__main__':
     # Export pipeline as pickle file
     with open("pipeline.pkl", "wb") as file:
         pickle.dump(final_pipe_trained, file)
+    return 

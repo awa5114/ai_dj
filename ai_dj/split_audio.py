@@ -1,5 +1,5 @@
 from spleeter.separator import Separator
-from ai_dj.params import DOWNLOADED_FOLDER, SPLIT_DATA_FOLDER
+from ai_dj.params import DOWNLOADED_FOLDER
 from ai_dj import gcp_storage
 import madmom
 import librosa
