@@ -13,3 +13,13 @@ google-cloud-storage
 # interface
 soundfile
 numpy
+
+# Model
+youtube_dl
+librosa
+madmom
+spleeter
+pyACA
+scipy
+sklearn
+pydub

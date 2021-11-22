@@ -26,7 +26,7 @@ def clean_local_folders():
 
 ## Get youtube_link from app
 def get_youtube_link():
-    youtube_link = "https://www.youtube.com/watch?v=tWIJFhZ69_U&ab_channel=Ti%C3%ABsto-Topic"
+    youtube_link = "https://www.youtube.com/watch?v=xarC5jAiO7w&ab_channel=ODESZA"
     start = 0
     return youtube_link, start
 
@@ -44,6 +44,7 @@ def get_audio_features_db():
                 f'gs://ai_dj_batch627_data/data/audio_features/audio_features_track_names.csv',
                 binary_mode=True))
     audio_feature_track_names = np.load(f, allow_pickle=True)
+    # audio_feature_track_names = pd.read_csv("ai_dj/data/audio_features_track_names.csv")
     audio_feature_track_names = pd.DataFrame(audio_feature_track_names)
     audio_feature_track_names.columns=["name", "youtube_link", "audio_features_file"]
     return audio_feature_track_names
@@ -194,6 +195,7 @@ def get_mix(youtube_link, start):
              'w'), audio_feature_track_names)
         name = title
     else:
+        print(audio_feature_track_names.head())
         name = audio_feature_track_names[audio_feature_track_names["youtube_link"] == youtube_link]["name"].values[0]
         print(name)
         new_song = get_audio_features(name)
