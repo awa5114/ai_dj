@@ -248,4 +248,4 @@ if __name__=='__main__':
     youtube_link, start = get_youtube_link()
     mix_file, mix_name, mix_rating_df = get_mix(youtube_link, start)
     update_model_with_rating(0, mix_rating_df)
-    
+    print("hello")
