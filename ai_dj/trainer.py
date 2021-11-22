@@ -26,7 +26,7 @@ def clean_local_folders():
 
 ## Get youtube_link from app
 def get_youtube_link():
-    youtube_link = "https://www.youtube.com/watch?v=ZwI-Bm2TTio"
+    youtube_link = "https://www.youtube.com/watch?v=tWIJFhZ69_U&ab_channel=Ti%C3%ABsto-Topic"
     start = 0
     return youtube_link, start
 
@@ -247,5 +247,5 @@ def update_model_with_rating(rating, mix_rating_df):
 if __name__=='__main__':
     youtube_link, start = get_youtube_link()
     mix_file, mix_name, mix_rating_df = get_mix(youtube_link, start)
-    update_model_with_rating(0, mix_rating_df)
+    # update_model_with_rating(0, mix_rating_df)
     

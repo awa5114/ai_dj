@@ -6,8 +6,8 @@ with open('requirements.txt') as f:
 requirements = [x.strip() for x in content if 'git+' not in x]
 
 setup(name='ai_dj',
-      version="1.0",
-      description="Project Description",
+      version="1.1",
+      description="Updated project for deployment",
       packages=find_packages(),
       install_requires=requirements,
       test_suite='tests',
