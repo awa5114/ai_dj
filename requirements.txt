@@ -1,9 +1,9 @@
 # packaging
 pip
 setuptools
-
 twine
 wheel
+Cython
 
 # API
 fastapi

@@ -196,7 +196,7 @@ def get_mix(youtube_link, start):
         name = title
     else:
         print(audio_feature_track_names.head())
-        name = audio_feature_track_names[audio_feature_track_names["youtube_link"] == youtube_link]["name"].values[0]
+        name = audio_feature_track_names[audio_feature_track_names["youtube_link"] == f'{youtube_link}-{start}']["name"].values[0]
         print(name)
         new_song = get_audio_features(name)
     model = pickle.load(open("pipeline.pkl","rb"))

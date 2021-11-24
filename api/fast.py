@@ -32,14 +32,16 @@ def index(filename):
 
 @app.get('/get-youtube')
 def get_youtube(url):
-    bucket_location = get_mix(url)
-    bucket_folder, bucket_file = os.path.split(bucket_location)
+    
+    mix_file, mixed_name, mix_rating_df = get_mix(url, start=0)
+    # bucket_location = get_mix(url, start=0)
+    # bucket_folder, bucket_file = os.path.split(bucket_location)
 
-    storage_client = storage.Client()
-    bucket = storage_client.bucket(bucket_folder)
-    blob = bucket.blob(bucket_file)
-    bts = blob.download_as_bytes()
-    stream = io.BytesIO(bts)
+    # storage_client = storage.Client()
+    # bucket = storage_client.bucket(bucket_folder)
+    # blob = bucket.blob(bucket_file)
+    # bts = blob.download_as_bytes()
+    stream = io.BytesIO(mix_file)
 
     return StreamingResponse(stream, media_type="audio/wav")
 
